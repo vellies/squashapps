@@ -12,9 +12,10 @@ exports.create = (req, res) => {
         lotNumber: req.body.lotNumber,
         costOfProduction: req.body.costOfProduction,
         sellingCost: req.body.sellingCost,
-        status:true
+        status: true,
+        userId: req.body.userId
     });
-
+    console.log("food", food)
     // Save User in the database
     food
         .save(food)
@@ -32,10 +33,36 @@ exports.create = (req, res) => {
 
 // Retrieve all Foods from the database.
 exports.findAll = (req, res) => {
-    Food.find({ status: true })
-        .then(data => {
-            res.send(data);
-        })
+    // Food.find({ status: true })
+    //     .then(data => {
+    //         res.send(data);
+    //     })
+    //     .catch(err => {
+    //         res.status(500).send({
+    //             message:
+    //                 err.message || "Some error occurred while retrieving food."
+    //         });
+    //     });
+    Food.aggregate([
+        {
+            $addFields: {
+                oid: {
+                    $toObjectId: '$userId'
+                }
+            }
+        },
+        {
+            $lookup:
+            {
+                from: "users",
+                localField: "oid",
+                foreignField: "_id",
+                as: "inventory_docs"
+            }
+        }
+    ]).then(data => {
+        res.send(data);
+    })
         .catch(err => {
             res.status(500).send({
                 message:
@@ -52,9 +79,9 @@ exports.findOne = (req, res) => {
         .then(data => {
             if (!data)
                 res.status(404).send({ message: "Not found Food with id " + id });
-            else if(data.status==false){
+            else if (data.status == false) {
                 res.status(404).send({ message: "Food record was deleted id " + id });
-            }else res.send(data);
+            } else res.send(data);
         })
         .catch(err => {
             res

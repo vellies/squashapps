@@ -50,5 +50,18 @@
                 "modeOfTransport":"Drive"
             }
         }
+    },
+    "Get all the orders of a user": {
+        "url": "http://localhost:8000/api/orders",
+        "method": "POST",
+        "Body": {
+            "ip1": {
+                "orderNum":"1",
+                "status":true,
+                "orderDate":55,
+                "dateOfdelivery":345,
+                "modeOfTransport":"Drive"
+            }
+        }
     }
 }

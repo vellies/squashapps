@@ -7,7 +7,8 @@ module.exports = mongoose => {
         lotNumber:{type: Number, unique: true},
         costOfProduction:Number,
         sellingCost:Number,
-        status:Boolean
+        status:Boolean,
+        userId:String
       },
       { timestamps: true }
     );
