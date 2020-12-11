@@ -40,7 +40,7 @@ exports.create = (req, res) => {
 
 // Retrieve all Tutorials from the database.
 exports.findAll = (req, res) => {
-    
+
     User.find({ status: true })
         .then(data => {
             res.send(data);
@@ -61,9 +61,9 @@ exports.findOne = (req, res) => {
         .then(data => {
             if (!data)
                 res.status(404).send({ message: "Not found Tutorial with id " + id });
-                else if(data.status==false){
-                    res.status(404).send({ message: "User record was deleted id " + id });
-                }else res.send(data);
+            else if (data.status == false) {
+                res.status(404).send({ message: "User record was deleted id " + id });
+            } else res.send(data);
         })
         .catch(err => {
             res
@@ -75,7 +75,6 @@ exports.findOne = (req, res) => {
 
 // Retrieve login user from the database.
 exports.login = (req, res) => {
-    console.log('11111', req)
     User.find({ email: req.body.email })
         .then(data => {
             if (data.length != 0) {
@@ -87,29 +86,31 @@ exports.login = (req, res) => {
                     }
                     if (hashPassword == true) {
                         User.findByIdAndUpdate(user[0].id, lastLoginAt, { useFindAndModify: false })
-                            .then(data => {
+                            .then(datas => {
+                                let data = {
+                                    status: true,
+                                    message: 'Login Succesfullu!',
+                                    data: datas
+                                }
                                 res.send(data);
                             })
                             .catch(err => {
-                                res.status(500).send({
-                                    message: "Error updating User with lastLoginAt=" + id
-                                });
+                                let data = { status: false, message: "Error updating User with lastLoginAt=" + id }
+                                res.send(data);
                             });
 
                     } else {
-                        res.status(500).send({
-                            message: "Please give valid Password"
-                        });
+                        let data = { status: false, message: "Please give valid Password" }
+                        res.send(data);
                     }
                 }).catch(err => {
-                    res.status(500).send({
-                        message: "Could not delete Tutorial with id=" + id
-                    });
+                    let data = { status: false, message: "Could not delete Tutorial with id=" + id }
+                    res.send(data);
                 });
             } else {
-                res.status(500).send({
-                    message: "Please give valid Email!"
-                });
+
+                let data = { status: false, message: "Please give valid Email!" }
+                res.send(data);
             }
         })
         .catch(err => {
