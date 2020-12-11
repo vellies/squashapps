@@ -11,13 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/vellies/squashapps.git"
   },
-  "keywords": [
-    "nodejs",
-    "express",
-    "mongodb",
-    "rest",
-    "api"
-  ],
+  "keywords": [  "nodejs",  "express",  "mongodb",  "rest", "api" ],
   "author": "Vellieswaran R",
   "license": "ISC",
   "bugs": {
