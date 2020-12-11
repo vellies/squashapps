@@ -2,6 +2,8 @@ const db = require("../models");
 const User = db.users;
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+var jwt = require('jsonwebtoken');
+var config = require('../config/config');
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -40,17 +42,27 @@ exports.create = (req, res) => {
 
 // Retrieve all Tutorials from the database.
 exports.findAll = (req, res) => {
+    var token = req.headers['x-access-token'];
+    if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
 
-    User.find({ status: true })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving tutorials."
+    jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+        User.find({ status: true })
+            .then(datas => {
+                let data = {
+                    status: true,
+                    message: 'Data get succesfull!',
+                    data: datas,
+                }
+                res.send(data);
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                        err.message || "Some error occurred while retrieving tutorials."
+                });
             });
-        });
+    });
 };
 
 // Find a single Tutorial with an id
@@ -87,10 +99,15 @@ exports.login = (req, res) => {
                     if (hashPassword == true) {
                         User.findByIdAndUpdate(user[0].id, lastLoginAt, { useFindAndModify: false })
                             .then(datas => {
+
+                                var token = jwt.sign({ id: user._id }, config.secret, {
+                                    expiresIn: 86400 // expires in 24 hours
+                                });
                                 let data = {
                                     status: true,
                                     message: 'Login Succesfullu!',
-                                    data: datas
+                                    data: datas,
+                                    token: token
                                 }
                                 res.send(data);
                             })
