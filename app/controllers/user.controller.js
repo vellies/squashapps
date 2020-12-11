@@ -75,6 +75,7 @@ exports.findOne = (req, res) => {
 
 // Retrieve login user from the database.
 exports.login = (req, res) => {
+    console.log('11111', req)
     User.find({ email: req.body.email })
         .then(data => {
             if (data.length != 0) {
